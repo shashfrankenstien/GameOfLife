@@ -99,6 +99,89 @@ class CGOL {
         document.getElementById('cgol').appendChild(table)
     }
 
+
+    setTxtPattern(pattern_obj) {
+        const col_offset = pattern_obj.col_offset || 0
+        const row_offset = pattern_obj.row_offset || 0
+        const alive_char = pattern_obj.alive_char || 'O'
+        pattern_obj.pattern.split('\n').forEach((row, row_num)=>{
+            [...row].forEach((cell, col_num)=>{
+                // console.log(col_num, row_num)
+                if(cell==alive_char)
+                    this.set(col_num+col_offset, row_num+row_offset)
+            })
+        })
+    }
+
+
+    setRLEPattern(pattern_obj) {
+        // Run Length Encoded
+        const col_offset = pattern_obj.col_offset || 0
+        const row_offset = pattern_obj.row_offset || 0
+        const flip90 = pattern_obj.flip90 || false
+
+        let  lines = pattern_obj.pattern.split('\n')
+        lines = lines.filter((l=>(!l.startsWith('#') && !l.startsWith('x') && l.trim()!==''))) // remove meta line
+
+        const pattern = lines.join('')
+        // console.log(pattern)
+
+        const setHelper = (col, row)=>{
+            if (!flip90)
+                this.set(col+col_offset, row+row_offset)
+            else
+                this.set(row+col_offset, col+row_offset)
+        }
+
+        let char_num = 0, row_num = 0, col_num = 0
+        while (char_num<pattern.length) {
+            const c = pattern[char_num]
+            if (c==='!') break
+             else {
+                let count = parseInt(c)
+                if (isNaN(count)) {
+                    // console.log(1, pattern[char_num], col_num)
+                    if (c==='$') {
+                        // console.log(c, col_num)
+                        row_num++
+                        col_num = 0
+                    } else {
+                        if (c==='o') {
+                            setHelper(col_num, row_num)
+                        }
+                        col_num++
+                    }
+                }
+                else if (!isNaN(count)) {
+                    let new_count = c
+                    char_num++ // skip a char
+                    while(!isNaN(parseInt(pattern[char_num]))) {
+                        new_count += pattern[char_num]
+                        char_num++
+                    }
+                    count = parseInt(new_count)
+                    // console.log(count, pattern[char_num], col_num)
+                    if (pattern[char_num]==='b') {
+                        col_num += count
+                    }
+                    else if (pattern[char_num]==='o') {
+                        for (let m=0; m<count; m++) {
+                            setHelper(col_num, row_num)
+                            col_num++
+                        }
+                    }
+                    else if (pattern[char_num]==='$') {
+                        // console.log(c, col_num)
+                        row_num += count
+                        col_num = 0
+                    }
+                }
+            }
+            char_num++
+        }
+    }
+
+
     getNeighbors(_x, _y) {
         let arr = []
         for (let x = _x-1; x<=_x+1; x++) {
@@ -157,12 +240,3 @@ class CGOL {
     }
 }
 
-
-// const cgol = new CGOL(200, 400, "blue", 155)
-const cgol = new CGOL(100, 200, "blue", 125)
-cgol.createGrid()
-
-
-setTimeout(()=>cgol.start(), 3000)
-// cgol.start()
-setInterval(()=>cgol.color=randomChoice(["red","blue","green","yellow"]),20000)
