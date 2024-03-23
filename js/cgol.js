@@ -181,6 +181,14 @@ class CGOL {
         }
     }
 
+    setPattern(pattern_obj) {
+        if (pattern_obj.type==='TXT') {
+            this.setTxtPattern(pattern_obj)
+        } else {
+            this.setRLEPattern(pattern_obj)
+        }
+    }
+
 
     getNeighbors(_x, _y) {
         let arr = []

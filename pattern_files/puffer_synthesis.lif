@@ -1,0 +1,8 @@
+#C [[ GRID MAXGRIDSIZE 14 THEME Catagolue ]]
+#CSYNTH xq8_u101cz3221whhhz0ssoxo80gz6d73xvgg820onvezya1 costs 13 gliders (true).
+#CLL state-numbering golly
+x = 58, y = 49, rule = B3/S23
+48bo$47bo$47b3o8$39bobo$40b2o$40bo4$39b3o$23bobo15bo$24b2o14bo$24b
+o23bobo$48b2o$o48bo$b2o$2o19bo$7b2o10bobo$7bobo10b2o$2b2o3bo$2bobo
+$2bo9$44b2o10b2o$44bobo8b2o$44bo12bo7$23b2o24bo$22bobo23b2o$24bo
+23bobo!
