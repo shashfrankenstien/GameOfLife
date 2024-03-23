@@ -1,5 +1,3 @@
-const PATTERNS_FOLDER = 'pattern_files'
-
 const PATTERNS = {}
 
 class Pattern {
@@ -61,29 +59,29 @@ class Pattern {
         this.alive_char = null
     }
 
-    static async fromFileURL(url) {
-        const file_url = new URL(url)
-        return fetch(`${PATTERNS_FOLDER}/${file_url.pathname}`).then(res=>{
+    static async fromFileURL(filename) {
+        return fetch(`pattern_files/${filename}`).then(res=>{
             return res.text()
         }).then(r=>{
-            return new Pattern(file_url.pathname.replace('/', '').replace('.lif', ''), r)
+            return new Pattern(filename.replace('.lif', ''), r)
         })
     }
 
     static async loadAll() {
-        return fetch(PATTERNS_FOLDER).then(res=>{
+        return fetch('pattern_files.txt').then(res=>{
             return res.text()
         }).then(r=>{
-            let tmp = document.createElement('div')
-            tmp.innerHTML = r
+
             var promises = [];
 
-            for (let a of tmp.querySelectorAll('a')) {
-                promises.push(
-                    Pattern.fromFileURL(a.href).then(p=>{
-                        PATTERNS[p.name] = p
-                    }).catch(e=>console.log(a.href, e))
-                )
+            for (let a of r.split('\n')) {
+                if (a.trim()) {
+                    promises.push(
+                        Pattern.fromFileURL(a.trim()).then(p=>{
+                            PATTERNS[p.name] = p
+                        }).catch(e=>console.log(a, e))
+                    )
+                }
             }
             return Promise.all(promises)
         })
