@@ -1,5 +1,5 @@
 html, body,
-#cgol {
+.container {
 	margin: 0 !important;
 	padding: 0 !important;
 	top: 0;
@@ -9,9 +9,17 @@ html, body,
 	overflow: hidden;
 }
 
+.container {
+	display: flex;
+	flex-direction: row;
+}
 
 #cgol {
-    background-color: black;
+	flex:1;
+	overflow: hidden;
+	border: 5px solid red;
+	background-color: black;
+	cursor: crosshair;
 }
 
 #cgol table {
@@ -19,19 +27,35 @@ html, body,
 	padding: 0 !important;
 	top: 0;
 	bottom: 0;
-	height: 100vh;
-	width: 100vw;
+	height: 100%;
+	width: 100%;
 	overflow: hidden;
-    border-collapse: collapse;
+	border-collapse: collapse;
 }
 
 #cgol table tr {
-    width: 100%;
+	width: 100%;
 }
 
 #cgol table td {
-    border: thin solid rgb(3, 3, 3);
-    /* background-color: white; */
-    margin: 0 !important;
+	border: thin solid rgb(3, 3, 3);
+	/* background-color: white; */
+	margin: 0 !important;
 	padding: 0 !important;
+}
+
+
+#side-bar {
+	width: 10vw;
+	background-color: gray;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	align-items: center;
+	padding-top: 10px;
+}
+
+#pattern-select {
+	width: 9vw;
+	overflow: hidden;
 }

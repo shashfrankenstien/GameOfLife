@@ -3,9 +3,11 @@ const PATTERNS = {}
 class Pattern {
     constructor(name, pattern, options={}) {
         this.name = name
-        this.col_offset = options.col_offset || 20
-        this.row_offset = options.row_offset || 20
         this.flip90 = options.flip90 || false
+        this.comments = null
+        this.alive_char = null
+        this.type = null
+        this.pattern = null
         this.parse(pattern)
     }
 
@@ -54,9 +56,8 @@ class Pattern {
                 end_reached = true
             }
         }
-        this.pattern = final_rle.join("")
         this.type = 'RLE'
-        this.alive_char = null
+        this.pattern = final_rle.join("")
     }
 
     static async fromFileURL(filename) {
@@ -71,7 +72,6 @@ class Pattern {
         return fetch('pattern_files.txt').then(res=>{
             return res.text()
         }).then(r=>{
-
             var promises = [];
 
             for (let a of r.split('\n')) {

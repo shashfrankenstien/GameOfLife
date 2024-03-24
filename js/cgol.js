@@ -13,11 +13,12 @@ class CGOL {
         this.color = color
         this.sleep_time = sleep_time
 
-        this.vgrid = new Array(rows)
-        for (let i=0; i<cols; i++)
-            this.vgrid[i] = new Array(cols).fill(0)
-        this.alive = []
+        this.vgrid = null
+        this.alive = null
         this.interval = null
+
+        this.pattern_pending = null
+        this.onclick = ()=>{} // noop
     }
 
     createID(x, y) {
@@ -37,6 +38,7 @@ class CGOL {
     }
 
     delayedSet(x, y, td_elem) {
+        // need to dely setting mouse clicks so that they don't immediately disappear
         if(this.vgrid[x]!==undefined && this.vgrid[x][y]!==undefined)
             this.vgrid[x][y] = 1
 
@@ -49,7 +51,6 @@ class CGOL {
             td_elem = document.getElementById(this.createID(x, y))
         if (td_elem) {
             td_elem.style.backgroundColor = this.color
-            // td_elem.style.border = "thin solid #0000FF";
         }
     }
 
@@ -72,22 +73,34 @@ class CGOL {
     }
 
     createGrid() {
-        let table = document.createElement('table')
+        this.vgrid = new Array(this.rows) // maintains 1 or 0 value for all cells
+        for (let i=0; i<this.cols; i++)
+            this.vgrid[i] = new Array(this.cols).fill(0) // start with all 0
+
+        this.alive = [] // alive stores x, y coordinates of alive elems
+
+        const cgol = document.getElementById('cgol')
+        cgol.innerHTML = ""
+
+        const table = document.createElement('table')
 
         for (let y = 0; y<this.rows; y++) {
             let tr = document.createElement('tr')
             for (let x = 0; x<this.cols; x++) {
                 let td = document.createElement('td')
                 td.id = this.createID(x, y)
+                // td.setAttribute('title', td.id)
                 const handler = (evt)=>{
                     if (evt.buttons!==1) return
                     evt.preventDefault()
-                    if(td.style.backgroundColor==="") {
+                    if (this.pattern_pending instanceof Pattern) {
+                        this.setPattern(x, y, this.pattern_pending)
+                        this.pattern_pending = null
+                    }
+                    else if(td.style.backgroundColor==="") {
                         this.delayedSet(x, y, td)
                     }
-                    // else {
-                    //     this.unset(x, y)
-                    // }
+                    this.onclick()
                 }
                 td.onmousedown = handler
                 td.onmouseenter = handler
@@ -96,30 +109,25 @@ class CGOL {
             table.appendChild(tr)
         }
 
-        document.getElementById('cgol').appendChild(table)
+        cgol.appendChild(table)
     }
 
 
-    setTxtPattern(pattern_obj) {
-        const col_offset = pattern_obj.col_offset || 0
-        const row_offset = pattern_obj.row_offset || 0
+    setTxtPattern(x, y, pattern_obj) {
         const alive_char = pattern_obj.alive_char || 'O'
         pattern_obj.pattern.split('\n').forEach((row, row_num)=>{
             [...row].forEach((cell, col_num)=>{
                 // console.log(col_num, row_num)
                 if(cell==alive_char)
-                    this.set(col_num+col_offset, row_num+row_offset)
+                    this.set(col_num+x, row_num+y)
             })
         })
     }
 
 
-    setRLEPattern(pattern_obj) {
+    setRLEPattern(x, y, pattern_obj) {
         // Run Length Encoded
-        const col_offset = pattern_obj.col_offset || 0
-        const row_offset = pattern_obj.row_offset || 0
         const flip90 = pattern_obj.flip90 || false
-
         let  lines = pattern_obj.pattern.split('\n')
         lines = lines.filter((l=>(!l.startsWith('#') && !l.startsWith('x') && l.trim()!==''))) // remove meta line
 
@@ -128,9 +136,9 @@ class CGOL {
 
         const setHelper = (col, row)=>{
             if (!flip90)
-                this.set(col+col_offset, row+row_offset)
+                this.set(col+x, row+y)
             else
-                this.set(row+col_offset, col+row_offset)
+                this.set(row+x, col+y)
         }
 
         let char_num = 0, row_num = 0, col_num = 0
@@ -181,11 +189,11 @@ class CGOL {
         }
     }
 
-    setPattern(pattern_obj) {
+    setPattern(x, y, pattern_obj) {
         if (pattern_obj.type==='TXT') {
-            this.setTxtPattern(pattern_obj)
+            this.setTxtPattern(x, y, pattern_obj)
         } else {
-            this.setRLEPattern(pattern_obj)
+            this.setRLEPattern(x, y, pattern_obj)
         }
     }
 
@@ -207,7 +215,6 @@ class CGOL {
         for (let cell of this.getNeighbors(_x, _y)) {
             if (!(cell.x >= this.cols || cell.y >= this.rows))
                 count = count + this.get(cell.x, cell.y)
-            // console.log('   ', cell, this.vgrid[cell.x][cell.y])
         }
         return count
     }

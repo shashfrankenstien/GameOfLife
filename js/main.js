@@ -1,55 +1,41 @@
 
-// const cgol = new CGOL(200, 400, "blue", 100)
-const cgol = new CGOL(100, 200, "blue", 100)
+const cgol = new CGOL(120, 240, "green", 100)
 cgol.createGrid()
 
-// cgol.setTxtPattern({
-//     pattern: duelingbanjosp24gun,
-//     col_offset: 30,
-//     row_offset: 10
-// })
+document.getElementById('clear-btn').onclick = () => {
+    cgol.createGrid()
+}
 
-// cgol.setTxtPattern({
-//     pattern: xwsstagalong_spaceship,
-//     col_offset: 150,
-//     row_offset: 10
-// })
-
-
-// // cgol.setTxtPattern({
-// //     pattern: p45_glider_gun,
-// //     col_offset: 100,
-// //     row_offset: 30
-// // })
-
-// cgol.setRLEPattern({
-//     pattern: gosper_glider_gun,
-//     col_offset: 120,
-//     row_offset: 40
-// })
-
-// cgol.setRLEPattern({
-//     pattern: barge_spaceship,
-//     col_offset: 30,
-//     row_offset: 70,
-//     flip90: true
-// })
-
-// cgol.setRLEPattern({
-//     pattern: puffer_synthesis,
-//     col_offset: 120,
-//     row_offset: 50,
-//     // flip90: true
-// })
 
 
 
 Pattern.loadAll().then(()=>{
-    cgol.setPattern(PATTERNS['puffer_synthesis'])
+    // cgol.setPattern(PATTERNS['puffer_synthesis'])
+
     // cgol.setRLEPattern(PATTERNS['3engine'])
+
+    const select = document.getElementById('pattern-select')
+
+    for(let name in PATTERNS) {
+        const opt = document.createElement('option')
+        opt.value = name
+        opt.innerText = name
+        select.appendChild(opt)
+    }
+
+
+    select.onchange = ()=>{
+        console.log(select.value)
+        cgol.pattern_pending = PATTERNS[select.value]
+    }
+
+    cgol.onclick = ()=>{
+        select.value = 'dot'
+    }
+
 })
 
 
-setTimeout(()=>cgol.start(), 3000)
-// cgol.start()
-setInterval(()=>cgol.color=randomChoice(["red","blue","green","yellow"]),20000)
+cgol.start()
+// setTimeout(()=>cgol.start(), 3000)
+// setInterval(()=>cgol.color=randomChoice(["red","blue","green","yellow"]),20000)
