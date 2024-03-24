@@ -11,13 +11,13 @@ html, body,
 
 .container {
 	display: flex;
-	flex-direction: row;
+	flex-direction: column;
 }
 
 #cgol {
 	flex:1;
 	overflow: hidden;
-	border: 5px solid red;
+	border: 5px solid grey;
 	background-color: black;
 	cursor: crosshair;
 }
@@ -45,14 +45,16 @@ html, body,
 }
 
 
-#side-bar {
-	width: 10vw;
+#top-bar {
+	height: 2rem;
+	width: 100%;
 	background-color: gray;
 	display: flex;
-	flex-direction: column;
+	flex-direction: row;
 	justify-content: flex-start;
 	align-items: center;
-	padding-top: 10px;
+	padding-top: 0.5rem;
+	padding-left: 0.5rem;
 }
 
 #pattern-select {
